@@ -101,7 +101,7 @@ This can be thought of as the smallest angle between any two vectors in the dict
 the absolute value around the inner product restricts the angles to one side only). This quantity
 has a lower bound known as the Welch bound determined by the dimension of the dictionary.
 \begin{equation}
-\mu(M) \geq \sqrt{\frac{n - m}{m(n-1}}
+\mu_{WB}(M) \geq \sqrt{\frac{n - m}{m(n-1}}
 \end{equation}
 It should be noted that this is not the greatest upper bound of MC, and that it is not always
 achieved. This will be demonstrated in the higher dimensional examples. \\
@@ -109,9 +109,31 @@ There have been different techniques used to minimize MC recently, some of which
 Another important technique used is the projection onto the $l^1$ ball $\ldots$\\
 Proximal Gradient Techniques: $\ldots$
 %In our project we used the algorithm that was proposed in the paper by Lin et al., 2018 (Reference). They call their algorithm as the Direct Mutual Coherence Minimization (DMCM) model. Such name  
-
+\pagebreak %optional
 \section{Methods}
-\subsection{Spreading out vectors}
+\subsection{Mutual Coherence Minimization}
+Consider $D \in \mathbb{R}^{m\times n}$:
+\begin{align}
+    D = \begin{bmatrix} 0 &1 &\>\>\>\sqrt{2}/2 \\
+                        1 &0 &-\sqrt{2}/2 \end{bmatrix}
+\end{align}
+Then it has MC and Welch bound:
+\begin{align}
+\mu (D) &= \sqrt{2}/2 \\
+\mu_{WB} (D) &= 0.5
+\end{align}
+After application of Lin's algorithm to the matrix, a new matrix is returned:
+\begin{align}
+    D = \left[\begin{array}{ccc} 0.966 & -0.258  &0.707\\ -0.259 & 0.966 & 0.707 \end{array}\right] 
+\end{align}
+And the new MC:
+\begin{align}
+\mu (M) &= 0.500 \\[1em]
+\end{align}
+Note that any unitary transformation (rotation) of this matrix will also have the minimum possible MC for
+matrices in $\mathbb{R}^{2 \times 3}$.
+
+
 Let us consider a matrix $ M\in \mathbb{ R}^{m\times n}$. By the definition the mutual coherence of a matrix is
 \begin{align}
 \mu(M)=\max\limits_{\substack{1\leq i,j \leq n \\ i\neq j}}\frac{|\langle (M)_i, (M)_j \rangle |}{\|(M)_i\| \|(M)_j\|}
@@ -187,6 +209,27 @@ The lower bound for mutual coherence for any $m\times n$ matrix is given as:
 
 
 \section{Results}
+\subsection{Mutual Coherence Minimization}
+Consider $D \in \mathbb{R}^{m\times n}$:
+\begin{align}
+    D = \begin{bmatrix} 0 &1 &\>\>\>\sqrt{2}/2 \\
+                        1 &0 &-\sqrt{2}/2 \end{bmatrix}
+\end{align}
+Then it has MC and Welch bound:
+\begin{align}
+\mu (D) &= \sqrt{2}/2 \\
+\mu_{WB} (D) &= 0.5
+\end{align}
+After application of Lin's algorithm to the matrix, a new matrix is returned:
+\begin{align}
+    D = \left[\begin{array}{ccc} 0.966 & -0.258  &0.707\\ -0.259 & 0.966 & 0.707 \end{array}\right] 
+\end{align}
+And the new MC:
+\begin{align}
+\mu (M) &= 0.500 \\[1em]
+\end{align}
+Note that any unitary transformation (rotation) of this matrix will also have the minimum possible MC for
+matrices in $\mathbb{R}^{2 \times 3}$.
 \subsection{Problems with stability}
 
 \subsection{Improving stability}
