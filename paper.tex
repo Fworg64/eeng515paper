@@ -1,0 +1,200 @@
+%%this file is to be a minimal file for using the IEEE journal
+%%Austin F. Oltmanns
+%%Anna Titova
+
+\documentclass[journal]{IEEEtran}
+
+\ifCLASSINFOpdf
+  \usepackage[pdftex]{graphicx}
+  \graphicspath{(./)}
+  \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+\fi
+
+\usepackage{amsmath}
+\usepackage{textcomp,xspace}
+\newcommand\la{\textlangle\xspace}
+\newcommand\ra{\textrangle\xspace}
+\usepackage{amssymb}
+
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+
+\begin{document}
+
+\title{Mutual Coherence Minimization \\via Projection Matrices\\ for CSM EENG 515}
+
+
+\author{ 
+Anna~Titova \\
+Austin~F.~Oltmanns% <-this % stops a space
+}
+
+\maketitle
+
+
+\begin{abstract}
+Mutual Coherence minimization of arbitrary sensor arrays is achieved 
+by multiplying the predetermined sensing matrix by a set of gains
+determined by an algorithm. This algorithm is discussed and an example
+application is demonstrated.
+\end{abstract}
+\begin{IEEEkeywords}
+Sparse Signals, $l_1$ minimization, Mutual Coherence
+\end{IEEEkeywords}
+
+\section{Introduction}
+\IEEEPARstart{T}{he} reduction of Mutual Coherence of sensing systems has long plagued
+those who need to measure quantities. It is important that if multiple measurements
+are taken, that there is not too much redundant information about the underlying 
+process being measured. Through Compressive Sensing (CS) techniques, it is possible to achieve
+a smaller amount of required measurements. Typically, these techniques involve a sparse
+sampling of an over-complete dictionary which could describe the signal being sampled. This 
+motivates the question: What is the "best" sparse sampling? \\
+Another paragraph here
+
+\hfill December 2, 2018
+
+\section{Background}
+There are many ways to measure a signal, especially when the signal is a two dimensional array. In this
+paper, several norms are used. First we define the $l^\infty$ norm:
+\begin{equation}
+||A||_\infty = \max_{i,j} a_{ij}, \quad A \in \mathbb{R}^{m\times n}
+\label{eq:linfty}
+\end{equation}
+Note that this is simply the largest entry in the matrix. This should not be confused with other 
+norms which take the largest row sum. Next we define the Frobenius norm:
+\begin{equation}
+||A||_F = \sqrt{\sum_{i,j} |a_{ij}|^2}, \quad A \in \mathbb{R}^{m\times n}
+\label{eq:frob}
+\end{equation}
+This can be thought of as vectorizing $A$, then computing it's vector $l^2$ norm.  To define the vector 
+$l^2$ norm:
+\begin{equation}
+||X||_2 = \sqrt{\sum_{i} |x_{i}|^2}, \quad X \in \mathbb{R}^{n}
+\label{eq:vecl2}
+\end{equation}
+Eqn~\ref{eq:vecl2} is a commonly used norm and is a member of the $l^p$ norms. Another such member from
+this family of norms is the $l_1$ norm. Again in this case we use the vectorized version:
+\begin{equation}
+||A||_1 = \sqrt{\sum_{i,j} |a_{ij}|}, \quad A \in \mathbb{R}^{m\times n}
+\label{eq:l1}
+\end{equation}
+Finally, there is one more norm which is used throughout this paper which is the $l^0$ norm. This 
+norm is defined as counting the number of zero entries of a vector. This norm is used when determining
+how sparse a signal is. \\
+A typical example of measuring a sparse signal arises when attempting to represent some $x$ 
+as a sparse signal $\alpha$ using an overcomplete dictionary, $D$.
+\begin{align}
+\alpha = Dx, \quad \mathrm{s.t.} \quad \min ||\alpha||_0
+\label{eq:sparseproblem}
+\end{align}
+Because this problem uses the $l^0$ norm, the problem is not immediately tractable. Some transformations
+must be made to the problem to provide a solution other that brute force checking of every possible
+$\alpha$. Thankfully, conditions exist where this is possible (which are explored in this paper). \\
+One method for transforming this problem, involves transitioning from the $l^0$ norm to the $l^1$ norm.
+The solutions to these two problems coincide when the Mutual Coherence of the dictionary used is low 
+enough. The Mutual Coherence (MC) of a matrix may be calculated via:
+\begin{align}
+\mu(M)=\max\limits_{\substack{1\leq i,j \leq n \\ i\neq j}}\frac{|\langle (M)_i, (M)_j \rangle |}{\|(M)_i\| \|(M)_j\|}
+\end{align}
+This can be thought of as the smallest angle between any two vectors in the dictionary (noting that
+the absolute value around the inner product restricts the angles to one side only). This quantity
+has a lower bound known as the Welch bound determined by the dimension of the dictionary.
+\begin{equation}
+\mu(M) \geq \sqrt{\frac{n - m}{m(n-1}}
+\end{equation}
+It should be noted that this is not the greatest upper bound of MC, and that it is not always
+achieved. This will be demonstrated in the higher dimensional examples. \\
+There have been different techniques used to minimize MC recently, some of which include: $\ldots$ \\
+Another important technique used is the projection onto the $l^1$ ball $\ldots$\\
+Proximal Gradient Techniques: $\ldots$
+%In our project we used the algorithm that was proposed in the paper by Lin et al., 2018 (Reference). They call their algorithm as the Direct Mutual Coherence Minimization (DMCM) model. Such name  
+
+\section{Methods}
+\subsection{Spreading out vectors}
+Let us consider a matrix $ M\in \mathbb{ R}^{m\times n}$. By the definition the mutual coherence of a matrix is
+\begin{align}
+\mu(M)=\max\limits_{\substack{1\leq i,j \leq n \\ i\neq j}}\frac{|\langle (M)_i, (M)_j \rangle |}{\|(M)_i\| \|(M)_j\|}
+\end{align}
+where $ (M)_i$ denotes the $i$-th column of $M$ and $\langle\cdot , \cdot \rangle $ denotes the standard inner product. The numerator of this expression is simply a cosine between the columns of a matrix. Therefore, we would treat the mutual coherence as a measure of how apart the columns of a matrix lives.  If the matrix is normalized the denominator in the definition expression is equal to $1$ and we end up with  the expression
+\begin{align}
+\mu(M)=\max\limits_{\substack{1\leq i,j \leq n \\ i\neq j}}|\langle (M)_i, (M)_j \rangle |
+\end{align}
+where each column is normalized $ \|(M)_i\|_2=1$.  We could rewrite this expression also as
+\begin{align}
+\mu(M)=\|M^TM-I\|_{\infty},
+\end{align}
+where $\|A \|_{\infty}=\max\limits_{i,j}(a_{ij})$ means the $\ell_{\infty}$-norm of a matrix $A$. We substract the identity matrix to avoid the influence of diagonal elements, because according to the mutual coherence definition we are interested in angle between the different columns $i\neq j$. \\
+Once we defined the mutual coherence let us move to the mutual coherence minimization problem statement.  Using the formulation from [Lin], we could write
+\begin{align}
+\min_{M\in\mathbb{R}^{m\times n}}f(M)=\|M^TM-I\|_{\infty},
+\end{align}
+\begin{align}
+\textrm{subject}\;\textrm{to} \;\|(M)_i\|_2=1
+\end{align}
+or phrasing this formula  in words we are looking for such matrix $M$ which will have smallest mutual coherence wherein its column will be normalized. \\
+Now the main question is how does a closed form solution for the problem above look like. It is well known fact that this problem is non-convex and its objective is non-smooth. Further we wil consider the algorithm proposed by Lin which allow us to find a locally optimal solution with convergence guarantee (Reference). \\
+First they ease the problem adopting the smoothing technique in (14) to smooth $\ell_{\infty}$-norm in the objective of the problem (ref to formula). They rewrited $\ell_{\infty}$-norm  as
+\begin{align}
+f(M)=\|M^TM-I\|_{\infty}=\max_{\|V\|_1\leq 1}\langle M^TM-I,V  \rangle
+\end{align}
+where $\|V\|_1\l=\sum\limits_{ij} | v_{ij}|$ is $\ell_{1}$-norm of $V$. Since ${V| \|V\|_1\leq 1}$ is a bounded convex set, a proximal function $d(V)$ for this set was defined wherein $d(V)$  is continuous and strongly convex on this set. The authors (Lin) suggest to chose $d(V)=\frac{1}{2}\|V \|_F^2$, where $\|\cdot\|_F$ the Frobenius norm of the matrix. Now let us introduce this proximal function into the problem (refer formula) 
+\begin{align}
+f_{\rho}(M)=\max_{\|V\|_1\leq 1}\langle M^TM-I,V  \rangle-\frac{\rho}{2}\|V \|_F^2
+\end{align}
+\begin{align}
+\textrm{subject}\;\textrm{to} \;\|(M)_i\|_2=1
+\end{align}
+where $\rho > 0$ is a smootheness parameter. This problem equivalent to previous in case when $\rho$ is sufficiently small.\\ 
+Utilizing the property that for any $M_1,M_2\in\mathbb{R}^{m\times n}$, there exists a constant $L=\frac{1}{\rho}$ such that 
+\begin{align}
+\|  \nabla f_{\rho}(M_1) - \nabla f_{\rho}(M_2) \|_F\leq L\| M_1-M_2\|_F,
+\end{align}
+the problem above could be solved by the proximal gradient method which updates $M$ in the $(k +1)$-th by
+\begin{align}
+M_{k+1}=\arg\min\limits_{M} \langle \nabla f_{\rho} (M_k), M-M_k\rangle+\frac{1}{2\alpha}\| M-M_k  \|_F^2
+\end{align}
+\begin{align}
+=\arg\min\limits_{M} \frac{1}{2}\|  M-(M_k-\alpha \nabla f_{\rho} (M_k)\|_F^2
+\end{align}
+\begin{align}
+\textrm{subject}\;\textrm{to} \;\|(M)_i\|_2=1
+\end{align}
+where $\alpha>0$ is the step size and $\alpha<\rho$ (for example $\alpha=0.99\rho$) to guarantee the convergence. This problem is simply called as a projection onto unit sphere. The above problem has a closed form solution by normalizing each column of $M_k-\alpha \nabla f_{rho} (M_k)$:
+\begin{align}
+(M_k+1)_i=\frac{(M_k-\alpha \nabla f_{\rho} (M_k))_i}{\|(M_k-\alpha \nabla f_{\rho} (M_k))_i\|_2}.
+\end{align}
+The gradient of the matrix is defined as $ \nabla f_{\rho} (M_k)=M_k(V_k+V_k^T)$. In order to find $V_k$ we need to compute a proximal projection onto $\ell_1$ ball:
+\begin{align}
+V_k=\arg\min_{V}\frac{1}{2}\| V-(M_k^TM_k-I)/\rho  \|_F
+\end{align}
+\begin{align}
+\textrm{subject}\;\textrm{to} \;\|(V)\|_1\leq1
+\end{align}
+In order to solve this problem we used the algorith proposed in [refer ball].
+
+$\hdots$\\
+To achieve mutual coherence minimization, a smoothed gradient descent technique is used.
+First it is applied to the overall sensing matrix $M$. \\
+$\hdots$\\
+The lower bound for mutual coherence for any $m\times n$ matrix is given as:
+\begin{equation}
+\mu(M) \geq \sqrt{\frac{n - m}{m(n-1}}
+\end{equation}
+\subsection{Minimizing Total Mutual Coherence}
+
+\subsection{Minimizing Mutual Coherence with Projection}
+
+
+\section{Results}
+\subsection{Problems with stability}
+
+\subsection{Improving stability}
+
+\section{Conclusion}
+This document has demonstrated how to minimize the mutual coherence of a sampling
+matrix via projection. $\ldots$
+
+
+
+\end{document}
