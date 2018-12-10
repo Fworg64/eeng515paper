@@ -57,78 +57,104 @@ dictionaries and sampling matrices. First mutual coherence minimization is explo
 
 \section{Background}
 There are many ways to measure a signal, especially when the signal is a two dimensional array. In this
-paper, several norms are used. First we define the $l_\infty$ norm:
+paper, several norms are used, each of which treats the input as a vector. First we define the matrix $\ell_\infty$ norm:
 \begin{equation}
 ||A||_\infty = \max_{i,j} a_{ij}, \quad A \in \mathbb{R}^{m\times n}
 \label{eq:linfty}
 \end{equation}
-Note that this is simply the largest entry in the matrix. This should not be confused with other 
-norms which take the largest row sum. Next we define the Frobenius norm:
+Note that this is simply the largest entry in the matrix. This should not be confused with other definition of matrix $\ell_\infty$ norm, which take the largest row absolute sum (latter definition we used in the class). Next we define the Frobenius norm:
 \begin{equation}
 ||A||_F = \sqrt{\sum_{i,j} |a_{ij}|^2}, \quad A \in \mathbb{R}^{m\times n}
 \label{eq:frob}
 \end{equation}
-This can be thought of as vectorizing $A$, then computing it's vector $l_2$ norm.  To define the vector 
-$l_2$ norm:
+This can be thought of as vectorizing $A$, then computing its vector $\ell_2$ norm.  To define the vector 
+$\ell_2$ norm:
 \begin{equation}
-||X||_2 = \sqrt{\sum_{i} |x_{i}|^2}, \quad X \in \mathbb{R}^{n}
+||x||_2 = \sqrt{\sum_{i} |x_{i}|^2}, \quad X \in \mathbb{R}^{n}
 \label{eq:vecl2}
 \end{equation}
-Eqn~\ref{eq:vecl2} is a commonly used norm and is a member of the $l_p$ norms. Another such member from
-this family of norms is the $l_1$ norm. Again in this case we use the vectorized version:
+Equation~\ref{eq:vecl2} is a commonly used norm and is a member of the $\ell_p$ norms,  where $1\leq p < \infty$. Another such member from
+this family of norms is the $\ell_1$ norm. Again in this case we use the vectorized version:
 \begin{equation}
-||A||_1 = \sqrt{\sum_{i,j} |a_{ij}|}, \quad A \in \mathbb{R}^{m\times n}
+||A||_1 = \sum_{i,j} |a_{ij}|, \quad A \in \mathbb{R}^{m\times n}
 \label{eq:l1}
 \end{equation}
-Finally, there is one more norm which is used throughout this paper which is the $l_0$ norm. This 
+Also, there is another definition of the matrix $\ell_1$ norm, we used in the class, which states that the $\ell_1$ norm of the matrix is the largest absolute column sum.\\ 
+Finally, there is one more norm which is used throughout this paper which is the $\ell_0$ norm, which is non-convex and does not belong to the  $\ell_p$ norms family, where $1\leq p < \infty$.  This 
 norm is defined as counting the number of zero entries of a vector. This norm is used when determining
-how sparse a signal is. \\
+how sparse a signal is. 
 A typical example of measuring a sparse signal arises when attempting to represent some $x$ 
 as a sparse signal $\alpha$ using an overcomplete dictionary, $D$.
 \begin{align}
 \alpha = Dx, \quad \mathrm{s.t.} \quad \min ||\alpha||_0
 \label{eq:sparseproblem}
 \end{align}
-Because this problem uses the $l_0$ norm, the problem is not immediately tractable. Some transformations
+Because this problem uses the $\ell_0$ norm, the problem is not immediately tractable. Some transformations
 must be made to the problem to provide a solution other that brute force checking of every possible
 $\alpha$. Thankfully, conditions exist where this is possible (which are explored in this paper). \\
-One method for transforming this problem, involves transitioning from the $l_0$ norm to the $l_1$ norm.
+One method for transforming this problem, involves transitioning from the $\ell_0$ norm to the $\ell_1$ norm.
 The solutions to these two problems coincide when the Mutual Coherence of the dictionary used is low 
 enough. The Mutual Coherence (MC) of a matrix may be calculated via:
 \begin{align}
-\mu(M)=\max\limits_{\substack{1\leq i,j \leq n \\ i\neq j}}\frac{|\langle (M)_i, (M)_j \rangle |}{\|(M)_i\| \|(M)_j\|}
+\mu(M)=\max\limits_{\substack{1\leq i,j \leq n \\ i\neq j}}\frac{|\langle (M)_i, (M)_j \rangle |}{\|(M)_i\| \|(M)_j\|},
 \end{align}
+where $ (M)_i$ denotes the $i$-th column of $M$ and $\langle\cdot , \cdot \rangle $ denotes the standard inner product in $\mathbb{R}^n$. 
 This can be thought of as the smallest angle between any two vectors in the dictionary (noting that
 the absolute value around the inner product restricts the angles to one side only). This quantity
 has a lower bound known as the Welch bound determined by the dimension of the dictionary.
 \begin{equation}
-\mu_{WB}(M) \geq \sqrt{\frac{n - m}{m(n-1}}
+\mu_{WB}(M) \geq \sqrt{\frac{n - m}{m(n-1)}}
 \end{equation}
 It should be noted that this is not the greatest upper bound of MC, and that it is not always
 achieved. This will be demonstrated in the higher dimensional examples. \\
-There have been different techniques used to minimize MC recently, some of which include: $\ldots$ \\
+There have been different techniques used to minimize MC recently, some of which include: the algorithm of Elad [Elad's paper], the algorithm of Duarte-Carajalino and Sapiro [DC and S paper], the algorithm of Xu et al [Xu's paper], and the algorithm of Obermeier and Martinez-Lorenzo [Obermeeir's paper]. 
+\begin{figure}[!h]
+\centering
+\includegraphics[width=2.8in]{comparison.png}
+\caption{Plots of the averaged mutual coherence of a matrix of size $m \times n$ v.s. number of rows $m$.}
+\label{Fig:comp_of_algtms}
+\end{figure}
+
+
+
+$\ldots$ \\
 Another important technique used is the projection onto the $l_1$ ball $\ldots$\\
 Proximal Gradient Techniques: $\ldots$
 %In our project we used the algorithm that was proposed in the paper by Lin et al., 2018 (Reference). They call their algorithm as the Direct Mutual Coherence Minimization (DMCM) model. Such name  
-\pagebreak %optional
+%\pagebreak %optional
 \section{Methods}
+\subsection{Projection onto $l_1$ ball}
 \subsection{Mutual Coherence Minimization}
-Lin's method for mutual coherence minimization involves estimating the gradient of the dictionary
-($\Delta D$) through a projection onto the $l_1$ ball. $\ldots$ \\
+The method of Lin et al. for direct mutual coherence minimization involves estimating the gradient of the dictionary
+($\Delta D$) through a projection onto the $l_1$ ball. A factor $V$ must be calculated which is
+the projection of $(D_k^T D_k - I)/ \rho $ onto the $l_1$ ball.
 After this factor $V$ has been found:
 \begin{align}
     \Delta D = M(V + V^T)
 \end{align}
-And to iterate for new values of D:
+And to iterate for new columns of D:
+This method represents the proximal gradient method for mutual coherence minimization.
 \begin{align}
-    D_{k+1} = \frac{2}{3}
+    (D_{k+1})_i = \frac{(D_k)_i - \alpha (\Delta D_k)_i}{||(D_k)_i - \alpha (\Delta D_k)_i||_2}
 \end{align}
+\subsection{Low Dimensional Example}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=2.8in]{lowdimhighmc.eps}
+\caption{A linearly dependant spanning set for $\mathbb{R}^2$.}
+\label{Fig:lowdimhigh}
+\end{figure}
+\noindent The following example will help illustrate the application of Mutual Coherence minimization
+to an overcomplete dictionary. The dictionary is chosen to be low dimensional so the concept
+of mutual coherence minimization can be illustrated clearly.
 Consider $D \in \mathbb{R}^{m\times n}$:
 \begin{align}
     D = \begin{bmatrix} 0 &1 &\>\>\>\sqrt{2}/2 \\
                         1 &0 &-\sqrt{2}/2 \end{bmatrix}
 \end{align}
-Then it has MC and Welch bound:
+Shown in Fig. \ref{Fig:lowdimhigh}, $D$ will have its Mutual Coherence minimized through this gradient 
+descent problem.
+It has initial MC and Welch bound:
 \begin{align}
 \mu (D) &= \sqrt{2}/2 \\
 \mu_{WB} (D) &= 0.5
@@ -141,10 +167,26 @@ And the new MC:
 \begin{align}
 \mu (M) &= 0.500 \\[1em]
 \end{align}
+This new dictionary is shown in Fig.~\ref{Fig:lowdimlow}
 Note that any unitary transformation (rotation) of this matrix will also have the minimum possible MC for
 matrices in $\mathbb{R}^{2 \times 3}$.
-
-
+\begin{figure}[!t]
+\centering
+\includegraphics[width=2.8in]{lowdimlowmc.eps}
+\caption{A less linearly dependant spanning set for $\mathbb{R}^2$. The absolute value
+of the inner product has been minimized for this number of vectors in $\mathbb{R}^2$.}
+\label{Fig:lowdimlow}
+\end{figure}
+%\pagebreak \\
+The algorithm of Lin et al. quickly reduces the mutual coherence of the dictionary in the first iteration while then taking some time to settle to a final solution. This is shown in Fig.~\ref{Fig:mcvk}.
+\begin{figure}[!t]
+\centering
+\includegraphics[width=2.8in]{MCvk.eps}
+\caption{The MC falls quiclkly in the first iteration before oscilating wildly on its way towards a
+steady solution.}
+\label{Fig:mcvk}
+\end{figure}
+\bigskip \\
 Let us consider a matrix $ M\in \mathbb{ R}^{m\times n}$. By the definition the mutual coherence of a matrix is
 \begin{align}
 \mu(M)=\max\limits_{\substack{1\leq i,j \leq n \\ i\neq j}}\frac{|\langle (M)_i, (M)_j \rangle |}{\|(M)_i\| \|(M)_j\|}
