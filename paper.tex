@@ -43,15 +43,18 @@ Sparse Signals, $l_1$ minimization, Mutual Coherence
 \end{IEEEkeywords}
 
 \section{Introduction}
-\IEEEPARstart{T}{he} reduction of Mutual Coherence of sensing systems has long plagued
+\IEEEPARstart{T}{he} reduction of Mutual Coherence (MC) of sensing systems has long plagued
 those who need to measure quantities. It is important that if multiple measurements
 are taken, that there is not too much redundant information about the underlying 
 process being measured. Through Compressive Sensing (CS) techniques, it is possible to achieve
 a smaller amount of required measurements. Typically, these techniques involve a sparse
-sampling of an over-complete dictionary which could describe the signal being sampled. This 
+sampling of an over-complete dictionary which is able to describe the signal being sampled. This 
 motivates the question: What is the "best" sparse sampling? \\
 This paper examines one method in particular for determining optimal sparse signal 
-dictionaries and sampling matrices. First mutual coherence minimization is explored
+dictionaries and sampling matrices. First mutual coherence minimization is explored as well
+as the relevant mathematics required for its minimization. Then a lower dimensional example
+of MC minimization is covered followed by a higher dimensional example involving MC reduction
+via a projection matrix. Finally, this method is compared to other current methods.
 
 \hfill December 2, 2018
 
@@ -90,7 +93,7 @@ as a sparse signal $\alpha$ using an overcomplete dictionary, $D$.
 \label{eq:sparseproblem}
 \end{align}
 Because this problem uses the $\ell_0$ norm, the problem is not immediately tractable. Some transformations
-must be made to the problem to provide a solution other that brute force checking of every possible
+must be made to the problem to provide a solution other than brute force checking of every possible
 $\alpha$. Thankfully, conditions exist where this is possible (which are explored in this paper). \\
 One method for transforming this problem, involves transitioning from the $\ell_0$ norm to the $\ell_1$ norm.
 The solutions to these two problems coincide when the Mutual Coherence of the dictionary used is low 
@@ -99,44 +102,77 @@ enough. The Mutual Coherence (MC) of a matrix may be calculated via:
 \mu(M)=\max\limits_{\substack{1\leq i,j \leq n \\ i\neq j}}\frac{|\langle (M)_i, (M)_j \rangle |}{\|(M)_i\| \|(M)_j\|},
 \end{align}
 where $ (M)_i$ denotes the $i$-th column of $M$ and $\langle\cdot , \cdot \rangle $ denotes the standard inner product in $\mathbb{R}^n$. 
+Alternativly, this may be written as:
+\begin{align}
+    \mu(M) = ||M^T M - I||_\infty
+\end{align}
 This can be thought of as the smallest angle between any two vectors in the dictionary (noting that
 the absolute value around the inner product restricts the angles to one side only). This quantity
 has a lower bound known as the Welch bound determined by the dimension of the dictionary.
 \begin{equation}
 \mu_{WB}(M) \geq \sqrt{\frac{n - m}{m(n-1)}}
 \end{equation}
-It should be noted that this is not the greatest upper bound of MC, and that it is not always
-achieved. This will be demonstrated in the higher dimensional examples. \\
-There have been different techniques used to minimize MC recently, some of which include: the algorithm of Elad [Elad's paper], the algorithm of Duarte-Carajalino and Sapiro [DC and S paper], the algorithm of Xu et al [Xu's paper], and the algorithm of Obermeier and Martinez-Lorenzo [Obermeeir's paper]. 
+It should be noted that this is not the greatest lower bound of MC, and that it is not always
+achieved. The true lower limit of MC for a particular dictionary depends only on its dimension. This will be demonstrated in the higher dimensional examples. \\
+There have been different techniques used to minimize MC recently, some of which include: Elad's algorithm [Elad's paper], the algorithm of Duarte-Carajalino and Sapiro [DC and S paper], the algorithm of Xu et al [Xu's paper], the algorithm of Lin et al., and the algorithm of Obermeier and Martinez-Lorenzo [Obermeeir's paper]. The Fig.~1 shows the comparison between performance of different algorithms as well as mutual coherence of a random matrix build by using the uniform distribution (the random matrices initially have small mutual coherence because their entries independent).  \\
 \begin{figure}[!h]
 \centering
-\includegraphics[width=2.8in]{comparison.png}
-\caption{Plots of the averaged mutual coherence of a matrix of size $m \times n$ v.s. number of rows $m$.}
+\includegraphics[width=3in]{comparison_for_paper.pdf}
+\caption{Plots of the averaged mutual coherence of a matrix of size $m \times n$ v.s. number of rows $m$ with fixed number of columns $n$ (From Lin et al. (ref))}
 \label{Fig:comp_of_algtms}
 \end{figure}
+As you could see from the figure (Fig.~1), the algorithms of Lin et al. has superior performance compared with other algorithms. Also it is worth noting to that the Welch bound is not achieved by any algorithm.  The Fig 1. does not include the algorithm of Obermeier and Martinez-Lorenzo, but as they mention in their paper that the Welch bound is not achieved as well. \\
+The algorithms proposed in the paper use the Gram matrix to find the matrix with a low mutual coherence. The Lin's et al. proposes to direct mutual coherence minimization. The algorithm of Obermeier and Martinez-Lorenzo uses the Lagrangian the Augmented Lagrangian method and the columns of the sensing matrix should be computed by a differentiable function. We decided to choose the paper by Lin et al., because this paper contains clear and detailed description of the algorithm as well as the material has a good correlation with material we have learn in the class. 
 
-
-
-$\ldots$ \\
-Another important technique used is the projection onto the $l_1$ ball $\ldots$\\
-Proximal Gradient Techniques: $\ldots$
+Another important technique used is the projection onto the $\ell_1$ ball. One possible way is to do that by the method proposed by  Duchi et al. This problem could be formulated as
+\begin{align}
+   \min\limits_{\mathbf{w}\in\mathbb{R}^n} \|\mathbf{w}-\mathbf{v} \|^2_2 \quad \mathrm{s.t.} \quad \|\mathbf{w} \|_1 \leq r, 
+\end{align}
+where $r$ is the radius of the $\ell_1$ ball, $\mathbf{v}\in\mathbb{R}^n$ the vector we would like to project onto the $\ell_1$ ball, and $\mathbf{w}$ is the result of the projection.  \\
+%Proximal Gradient Techniques: $\ldots$
+This $\ell_1$ projection technique is very useful for accomplishing the next technique.
+In the algorithm of Lin et al. a technique is used called the proximal gradient method. This method is
+a generalized form of gradient descent which may apply to functions which are not differentiable 
+(such as the $\ell_0$ norm). In this method the objective function is able to be smoothed in some way. 
+For example, suppose one wishes to maximize an inner product while maintaining an $\ell_1$ norm size 
+constraint.
+\begin{align}
+f(M) = \max_{||\mathbf{V}|| \leq 1} <M^T M - I, V>
+\end{align}
+This $\ell_1$ norm constraint makes this a nondifferentiable expression, however, a smooth approximation
+may be made through the addition of a term:
+\begin{align}
+    f_\rho(M) = \max_{||\mathbf{V}|| \leq 1} <M^T M - I, V> - \frac{\rho}{2}||V||_F^2
+\end{align}
+Where $\rho$ is a smoothing factor. Then the gradient of this smoothed function may be approximated by:
+\begin{align}
+    \Delta f_\rho(M) = M(V + V^T)
+\end{align}
+Where $V$ is the projection of $(M^T M - I)/\rho$ onto the $\ell_1$ ball.
 %In our project we used the algorithm that was proposed in the paper by Lin et al., 2018 (Reference). They call their algorithm as the Direct Mutual Coherence Minimization (DMCM) model. Such name  
 %\pagebreak %optional
 \section{Methods}
-\subsection{Projection onto $l_1$ ball}
+%\subsection{Projection onto $l_1$ ball}
 \subsection{Mutual Coherence Minimization}
-The method of Lin et al. for direct mutual coherence minimization involves estimating the gradient of the dictionary
-($\Delta D$) through a projection onto the $l_1$ ball. A factor $V$ must be calculated which is
-the projection of $(D_k^T D_k - I)/ \rho $ onto the $l_1$ ball.
-After this factor $V$ has been found:
+The method of Lin et al. for direct mutual coherence minimization involves estimating the gradient 
+of the objective function of dictionary mutual coherence.
 \begin{align}
-    \Delta D = M(V + V^T)
+    f(M) = \max_{||\mathbf{V}|| \leq 1} <M^T M - I, V>
 \end{align}
-And to iterate for new columns of D:
-This method represents the proximal gradient method for mutual coherence minimization.
+($\Delta D$) through a projection onto the $l_1$ ball. At each iteration, a factor $V$ 
+must be calculated which is
+the projection of $(D_k^T D_k - I)/ \rho $ onto the $l_1$ ball.
+After this factor $V$ has been found, the gradient approximation for the current iteration is given as:
+\begin{align}
+    \Delta D_k = M_k(V + V^T)
+\end{align}
+And to iterate for new columns of D, the equation of iteration is:
 \begin{align}
     (D_{k+1})_i = \frac{(D_k)_i - \alpha (\Delta D_k)_i}{||(D_k)_i - \alpha (\Delta D_k)_i||_2}
+\label{eq:iterate}
 \end{align}
+This method of first computing $V$ (which yields $\Delta D$) and then iterating $D$ using
+Equation~\ref{eq:iterate} represents the proximal gradient method for MC minimization.
 \subsection{Low Dimensional Example}
 \begin{figure}[!h]
 \centering
@@ -177,16 +213,18 @@ matrices in $\mathbb{R}^{2 \times 3}$.
 of the inner product has been minimized for this number of vectors in $\mathbb{R}^2$.}
 \label{Fig:lowdimlow}
 \end{figure}
+It should be seen that in this case in $\mathbb{R}^{2\times3}$ the Welch bound for MC of 0.5 is 
+actually achieved. This is not always the case however as will be shown in the next example.
 %\pagebreak \\
 The algorithm of Lin et al. quickly reduces the mutual coherence of the dictionary in the first iteration while then taking some time to settle to a final solution. This is shown in Fig.~\ref{Fig:mcvk}.
 \begin{figure}[!t]
 \centering
 \includegraphics[width=2.8in]{MCvk.eps}
-\caption{The MC falls quiclkly in the first iteration before oscilating wildly on its way towards a
+\caption{The MC falls quickly in the first iteration before oscillating wildly on its way towards a
 steady solution.}
 \label{Fig:mcvk}
 \end{figure}
-\bigskip \\
+\subsection{Minimizing Mutual Coherence with Projection}
 Let us consider a matrix $ M\in \mathbb{ R}^{m\times n}$. By the definition the mutual coherence of a matrix is
 \begin{align}
 \mu(M)=\max\limits_{\substack{1\leq i,j \leq n \\ i\neq j}}\frac{|\langle (M)_i, (M)_j \rangle |}{\|(M)_i\| \|(M)_j\|}
@@ -199,7 +237,7 @@ where each column is normalized $ \|(M)_i\|_2=1$.  We could rewrite this express
 \begin{align}
 \mu(M)=\|M^TM-I\|_{\infty},
 \end{align}
-where $\|A \|_{\infty}=\max\limits_{i,j}(a_{ij})$ means the $\ell_{\infty}$-norm of a matrix $A$. We substract the identity matrix to avoid the influence of diagonal elements, because according to the mutual coherence definition we are interested in angle between the different columns $i\neq j$. \\
+where $\|A \|_{\infty}=\max\limits_{i,j}(a_{ij})$ means the $\ell_{\infty}$-norm of a matrix $A$. We subtract the identity matrix to avoid the influence of diagonal elements, because according to the mutual coherence definition we are interested in angle between the different columns $i\neq j$. \\
 Once we defined the mutual coherence let us move to the mutual coherence minimization problem statement.  Using the formulation from [Lin], we could write
 \begin{align}
 \min_{M\in\mathbb{R}^{m\times n}}f(M)=\|M^TM-I\|_{\infty},
@@ -246,7 +284,62 @@ V_k=\arg\min_{V}\frac{1}{2}\| V-(M_k^TM_k-I)/\rho  \|_F
 \begin{align}
 \textrm{subject}\;\textrm{to} \;\|(V)\|_1\leq1
 \end{align}
-In order to solve this problem we used the algorith proposed in [refer ball].
+In order to solve this problem we used the algorithm proposed in [refer ball].
+\begin{figure}[!h]
+\centering
+\includegraphics[width=3.4in]{initial_fp.eps}
+\caption{Initial.}
+\label{Fig:initial_rand}
+\end{figure}
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=3.4in]{opt_fp.eps}
+\caption{Difference.}
+\label{Fig:diff_rand}
+\end{figure}
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=3.4in]{diff_fp.eps}
+\caption{Difference.}
+\label{Fig:diff_rand}
+\end{figure}
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=3.4in]{mc_fp_nr.eps}
+\caption{Difference.}
+\label{Fig:diff_rand}
+\end{figure}
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=3.4in]{initial_fp_nr.eps}
+\caption{Initial.}
+\label{Fig:initial_rand}
+\end{figure}
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=3.4in]{opt_fp_nr.eps}
+\caption{Difference.}
+\label{Fig:diff_rand}
+\end{figure}
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=3.4in]{diff_fp_nr.eps}
+\caption{Difference.}
+\label{Fig:diff_rand}
+\end{figure}
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=3.4in]{mc_fp_nr.eps}
+\caption{Difference.}
+\label{Fig:diff_rand}
+\end{figure}
 
 $\hdots$\\
 To achieve mutual coherence minimization, a smoothed gradient descent technique is used.
@@ -256,41 +349,33 @@ The lower bound for mutual coherence for any $m\times n$ matrix is given as:
 \begin{equation}
 \mu(M) \geq \sqrt{\frac{n - m}{m(n-1}}
 \end{equation}
-\subsection{Minimizing Total Mutual Coherence}
-
-\subsection{Minimizing Mutual Coherence with Projection}
-
 
 \section{Results}
-\subsection{Mutual Coherence Minimization}
-Consider $D \in \mathbb{R}^{m\times n}$:
-\begin{align}
-    D = \begin{bmatrix} 0 &1 &\>\>\>\sqrt{2}/2 \\
-                        1 &0 &-\sqrt{2}/2 \end{bmatrix}
-\end{align}
-Then it has MC and Welch bound:
-\begin{align}
-\mu (D) &= \sqrt{2}/2 \\
-\mu_{WB} (D) &= 0.5
-\end{align}
-After application of Lin's algorithm to the matrix, a new matrix is returned:
-\begin{align}
-    D = \left[\begin{array}{ccc} 0.966 & -0.258  &0.707\\ -0.259 & 0.966 & 0.707 \end{array}\right] 
-\end{align}
-And the new MC:
-\begin{align}
-\mu (M) &= 0.500 \\[1em]
-\end{align}
-Note that any unitary transformation (rotation) of this matrix will also have the minimum possible MC for
-matrices in $\mathbb{R}^{2 \times 3}$.
+The algorithm of Lin et al. is an efficient way to minimize the MC of dictionaries used
+in compressive sensing applications. When compared to other current algorithms, it currently
+outperforms the others in terms of convergence rate and minimization achieved.
 \subsection{Problems with stability}
+The only time the algorithm could not perform well was
+when it was given poorly conditioned input. This includes cases where where the initial MC of the
+dictionary is too close to 1 either because two or more vectors are nearly parallel or opposite. Under these circumstances the algorithm is unable to compute the gradient of the dictionary in a stable manner.
 
 \subsection{Improving stability}
-
+Restricting the dictionaries which are attempted to be optimized to those which do not 
+include redundant or exactly opposite entries is an effective technique for maintaining stability 
+when using the algorithm of Lin et al.
 \section{Conclusion}
-This document has demonstrated how to minimize the mutual coherence of a sampling
-matrix via projection. $\ldots$
+The field of CS is rapidly evolving at this time, and this is evidenced by the progress shown
+in algorithms such as those developed by Lin et al. and others. The technique discussed in this paper 
+provides a way to enhance the dictionary used in a CS application in a flexible manner. First, the 
+underlying dictionary can be modified for better mutual coherence, guided by the matrix given by the 
+direct mutual coherence minimization method. Secondly, if the underlying dictionary is fixed, the 
+mutual coherence of the overall dictionary may be reduced through the application of a projection
+matrix.
 
+These bold new techniques afford more opportunity to researchers as they pursue sparser and sparser
+representations for signals.
+\section{References}
+1.
 
 
 \end{document}
